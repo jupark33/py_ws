@@ -1,19 +1,21 @@
 import websockets
 import asyncio
 import datetime
+import time
 
 def nowdt():
     now = datetime.datetime.now()
     return now
 
-
 class WebSocketManager:
-    def __int__(self):
+    def __init__(self):
         self.websocket = None
+        self.running = None
 
     async def disconnect(self):
         print('disconnect')
-        self.websocket.close()
+        await self.websocket.close()
+        # self.running = False
 
     async def send(self):
         print('send')
@@ -28,15 +30,18 @@ class WebSocketManager:
                 self.websocket = websocket
                 await websocket.send(f'{nowdt()}[Client]Hello')
 
-                while True:
-                    a=1
+                while self.running is True:
+                    time.sleep(1)
         except Exception as e:
             print('웹소켓 CONNECT() exception')
             print(e)
 
+
 if __name__ == '__main__':
     wsm = WebSocketManager()
-    # await wsm.connect()
+
+    # 연결 후 3초후 연결해제 성공
     asyncio.run(wsm.connect())
-    asyncio.run(wsm.send())
+    time.sleep(3)
+    asyncio.run(wsm.disconnect())
 
